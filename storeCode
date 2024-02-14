@@ -1,0 +1,44 @@
+inputRecher.addActionListener(new ActionListener() {
+	            @Override
+	            public void actionPerformed(ActionEvent e) {
+	                String searchText = inputRecher.getText();
+	                if (searchText.trim().isEmpty()) {
+	                	
+							refreshTable();
+	            
+						
+	                } else {
+	                    filterTableManually(searchText); // Apply custom filtering
+	                }
+	            }
+
+	            private void filterTableManually(String searchText) {
+	                TableModel model = table.getModel();
+	                DefaultTableModel filteredModel = new DefaultTableModel();
+
+	                // Copy column names from original model
+	                String[] columnNames = new String[model.getColumnCount()];
+	                for (int i = 0; i < columnNames.length; i++) {
+	                    columnNames[i] = model.getColumnName(i);
+	                }
+	                filteredModel.setColumnIdentifiers(columnNames);
+
+	                // Filter rows based on the "Nom" column and add to filtered model
+	                int nomColumnIndex = table.getColumnModel().getColumnIndex(selectedColumn); // Get index of the "Nom" column
+	                for (int i = 0; i < model.getRowCount(); i++) {
+	                    String nom = model.getValueAt(i, nomColumnIndex).toString();
+	                    if (nom.toLowerCase().contains(searchText.toLowerCase())) {
+	                        Object[] rowData = new Object[model.getColumnCount()];
+	                        for (int j = 0; j < model.getColumnCount(); j++) {
+	                            rowData[j] = model.getValueAt(i, j);
+	                        }
+	                        filteredModel.addRow(rowData);
+	                    }
+	                }
+
+	                table.setModel(filteredModel);
+	            }
+
+
+				
+	        });

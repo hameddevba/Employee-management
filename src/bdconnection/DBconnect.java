@@ -139,6 +139,7 @@ public class DBconnect {
 	    return employe;
 	}
 	
+	
 	public void updateEmploye(Employe employe) {
 	    try (Connection con = getConnection();
 	         PreparedStatement ps = con.prepareStatement("UPDATE employes SET nom_prenom = ?, adress = ?, email = ?, date_recrutement = ?, tel = ? WHERE numero = ?")) {

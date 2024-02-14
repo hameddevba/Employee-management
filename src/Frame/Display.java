@@ -6,11 +6,14 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.JTable;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 import Entite.Employe;
 import bdconnection.DBconnect;
@@ -43,9 +46,15 @@ public class Display extends JFrame {
 	String selectedColumn = "ID";
 	
 	public Display(DBconnect theDb) {
+		//Debuut du constructeur ....
 		
+		
+		
+		//instanciation de la base de donnee
 		db = theDb;
 		
+		
+		//parametre du JFrame
 		this.setLocationByPlatform(true);
 		/* this.setLocationRelativeTo(null); */ 
 		
@@ -56,10 +65,14 @@ public class Display extends JFrame {
 
 		getContentPane().setLayout(null);
 		
+		
+		//Declaration du tableau 
 		table = new JTable();
 		
+		//appel de la fonction qui recupere et affiche les donnees depuis la base
 		refreshTable();
 		
+		//parametre du tableau 
 		table.setBounds(58, 64, 734, 202);
 		JScrollPane scrollPane = new JScrollPane(table);
 		table.setFillsViewportHeight(true);
@@ -85,6 +98,9 @@ public class Display extends JFrame {
 		 */
 		
 		
+		
+		//Jpanel pour la recherche sur le tableau
+		
 		JPanel panel = new JPanel();
 		panel.setBounds(106, 11, 807, 32);
 		getContentPane().add(panel);
@@ -99,7 +115,7 @@ public class Display extends JFrame {
 		
 		
 		
-
+		// le Filtre 
 		JComboBox<String> filtreCombo = new JComboBox<>();
 		filtreCombo.setFont(new Font("Segoe UI", Font.BOLD, 14));
 		filtreCombo.setBounds(633, 0, 117, 26);
@@ -124,67 +140,53 @@ public class Display extends JFrame {
 		
 		
 		
+		//Champs input recherche 
+		
+		 TableRowSorter<TableModel> sort = new TableRowSorter<>(table.getModel());
+		 
+		 table.setRowSorter(sort);
 		
 		inputRecher = new JTextField();
 		inputRecher.setBounds(195, 6, 406, 20);
 		
-		 inputRecher.addActionListener(new ActionListener() {
-	            @Override
-	            public void actionPerformed(ActionEvent e) {
-	                String searchText = inputRecher.getText();
-	                if (searchText.trim().isEmpty()) {
-	                	
-							refreshTable();
-	            
-						
-	                } else {
-	                    filterTableManually(searchText); // Apply custom filtering
-	                }
-	            }
+		inputRecher.getDocument().addDocumentListener(new DocumentListener() {
 
-	            private void filterTableManually(String searchText) {
-	                TableModel model = table.getModel();
-	                DefaultTableModel filteredModel = new DefaultTableModel();
-
-	                // Copy column names from original model
-	                String[] columnNames = new String[model.getColumnCount()];
-	                for (int i = 0; i < columnNames.length; i++) {
-	                    columnNames[i] = model.getColumnName(i);
-	                }
-	                filteredModel.setColumnIdentifiers(columnNames);
-
-	                // Filter rows based on the "Nom" column and add to filtered model
-	                int nomColumnIndex = table.getColumnModel().getColumnIndex(selectedColumn); // Get index of the "Nom" column
-	                for (int i = 0; i < model.getRowCount(); i++) {
-	                    String nom = model.getValueAt(i, nomColumnIndex).toString();
-	                    if (nom.toLowerCase().contains(searchText.toLowerCase())) {
-	                        Object[] rowData = new Object[model.getColumnCount()];
-	                        for (int j = 0; j < model.getColumnCount(); j++) {
-	                            rowData[j] = model.getValueAt(i, j);
-	                        }
-	                        filteredModel.addRow(rowData);
-	                    }
-	                }
-
-	                table.setModel(filteredModel);
-	            }
-
-
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				// TODO Auto-generated method stub
+				String str = inputRecher.getText();
+                if (str.trim().length() == 0) {
+                    sort.setRowFilter(null);
+                } else {
+                    //(?i) recherche insensible à la casse
+                    sort.setRowFilter(RowFilter.regexFilter("(?i)" + str));
+                }
 				
-	        });
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				// TODO Auto-generated method stub
+				 String str = inputRecher.getText();
+	                if (str.trim().length() == 0) {
+	                    sort.setRowFilter(null);
+	                } else {
+	                    sort.setRowFilter(RowFilter.regexFilter("(?i)" + str));
+	                }
+				
+			}
+
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				// TODO Auto-generated method stub
+				
+			}});
 		 
 		panel.add(inputRecher);
 		inputRecher.setColumns(10);
 		
 		
-		
-
-
-		
-		
-		
-		
-		
+	
 		
 		JPanel panel_1 = new JPanel();
 		panel_1.setBounds(170, 519, 637, 32);
