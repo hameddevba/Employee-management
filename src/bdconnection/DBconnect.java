@@ -14,8 +14,8 @@ public class DBconnect {
 		try {
 			String mysqlJDBCDriver = "com.mysql.cj.jdbc.Driver";
 			String url = "jdbc:mysql://localhost:3306/gestion";
-			String user = "itkann";
-			String pass = "itkann";
+			String user = "root";
+			String pass = "";
 			
 			Class.forName(mysqlJDBCDriver);
 			
